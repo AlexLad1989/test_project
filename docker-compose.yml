@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  database:
+    container_name: database
+    image: postgres:14
+    ports:
+      - '5432'
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - './src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql'
+  app:
+    container_name: app
+    build: .
+    image: app
+    depends_on:
+      - database
+    ports:
+      - '8080:8080'
+    volumes:
+      - './academy_awards.csv:/var/run/academy_awards.csv'
+    environment:
+      oscar-winners-file-name: /var/run/academy_awards.csv
+      omdb-api-url: http://www.omdbapi.com/
